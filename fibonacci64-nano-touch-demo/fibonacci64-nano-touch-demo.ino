@@ -39,26 +39,27 @@ uint8_t brightness = 64;
 Adafruit_FreeTouch touch0 = Adafruit_FreeTouch(A0, OVERSAMPLE_4, RESISTOR_0, FREQ_MODE_NONE);
 Adafruit_FreeTouch touch1 = Adafruit_FreeTouch(A1, OVERSAMPLE_4, RESISTOR_0, FREQ_MODE_NONE);
 Adafruit_FreeTouch touch2 = Adafruit_FreeTouch(A2, OVERSAMPLE_4, RESISTOR_0, FREQ_MODE_NONE);
+Adafruit_FreeTouch touch3 = Adafruit_FreeTouch(A3, OVERSAMPLE_4, RESISTOR_0, FREQ_MODE_NONE);
 
-#define touchPointCount 3
+#define touchPointCount 4
 
 // These values were discovered using the commented-out Serial.print statements in handleTouch below
 
 // minimum values for each touch pad, used to filter out noise
-uint16_t touchMin[touchPointCount] = { 558, 259, 418 };
+uint16_t touchMin[touchPointCount] = { 558, 259, 418, 368 };
 
 // maximum values for each touch pad, used to determine when a pad is touched
-uint16_t touchMax[touchPointCount] = { 1016, 1016, 1016 };
+uint16_t touchMax[touchPointCount] = { 1016, 1016, 1016, 1016 };
 
 // raw capacitive touch sensor readings
-uint16_t touchRaw[touchPointCount] = { 0, 0, 0 };
+uint16_t touchRaw[touchPointCount] = { 0, 0, 0, 0 };
 
 // capacitive touch sensor readings, mapped/scaled one one byte each (0-255)
-uint8_t touch[touchPointCount] = { 0, 0, 0 };
+uint8_t touch[touchPointCount] = { 0, 0, 0, 0 };
 
 // coordinates of the touch points
-uint8_t touchPointX[touchPointCount] = { 0, 127, 255 };
-uint8_t touchPointY[touchPointCount] = { 127, 255, 127 };
+uint8_t touchPointX[touchPointCount] = { 127,   0, 127, 255 };
+uint8_t touchPointY[touchPointCount] = {   0, 127, 255, 127 };
 
 boolean activeWaves = false;
 
@@ -85,6 +86,8 @@ void setup() {
     Serial.println("Failed to begin qt on pin A1");
   if (!touch2.begin())
     Serial.println("Failed to begin qt on pin A2");
+  if (!touch3.begin())
+    Serial.println("Failed to begin qt on pin A3");
 
   FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);
   FastLED.setDither(false);
@@ -132,6 +135,7 @@ void handleTouch() {
     if (i == 0) touchRaw[i] = touch0.measure();
     else if (i == 1) touchRaw[i] = touch1.measure();
     else if (i == 2) touchRaw[i] = touch2.measure();
+    else if (i == 3) touchRaw[i] = touch3.measure();
 
     // // uncomment to display raw touch values in the serial monitor/plotter
     //    Serial.print(touchRaw[i]);
